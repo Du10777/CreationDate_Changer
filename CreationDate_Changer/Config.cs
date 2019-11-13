@@ -20,13 +20,17 @@ namespace CreationDate_Changer
 
         public static void Open()
         {
+            if (Config.DebugMode)
+                System.Windows.Forms.MessageBox.Show("Config.Open");
+
             string exeFileName = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string CfgFileName = exeFileName.Remove(exeFileName.Length - 4) + ".cfg";
 
             if (!File.Exists(CfgFileName))
             {
                 CreateDefaultConfig(CfgFileName);
-                Environment.Exit(1);
+                Log.Add("Не обнаружен файл конфига. Создан стандартный конфиг");
+                Program.Close(1);
             }
 
             ReadConfig(CfgFileName);
@@ -145,7 +149,7 @@ namespace CreationDate_Changer
                 Message += Value + "\r\n";
                 Log.Add(Message);
 
-                Environment.Exit(-6);
+                Program.Close(-4);
             }
 
             return result;
@@ -158,12 +162,12 @@ namespace CreationDate_Changer
             if (Folder == defaultFolder)
             {
                 Log.Add("Вы используете папку по умолчанию. Её использовать нельзя. Задайте другое имя папки");
-                Environment.Exit(-3);
+                Program.Close(-1);
             }
             if (!Directory.Exists(Folder))
             {
                 Log.Add("Не найден указанный каталог: " + Folder);
-                Environment.Exit(-3);
+                Program.Close(-3);
             }
             if (!Folder.EndsWith("\\"))
             {//добавить последний слеш, если его нет
@@ -192,6 +196,7 @@ namespace CreationDate_Changer
         public static string DBLocation;
         public static string LogsFileName;
         public static long MaxLogSize = -1;
+        public static bool DebugMode = false;
 
         static string defaultFolder = @"D:\ExampleFolder";
         static string defaultDBLocation = @"D:\CreationDate_Changer_DB.txt";

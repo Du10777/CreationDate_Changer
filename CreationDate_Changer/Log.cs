@@ -14,6 +14,9 @@ namespace CreationDate_Changer
 
         public static void Open(string fileName)
         {
+            if (Config.DebugMode)
+                System.Windows.Forms.MessageBox.Show("Log.Open");
+
             try
             {
                 string LogsFolder = Path.GetDirectoryName(fileName);
@@ -33,23 +36,31 @@ namespace CreationDate_Changer
                 Message += "Error message: " + ex.Message;
 
                 Log.Add(Message);
-                Environment.Exit(-5);
+                Program.Close(-2);
             }
         }
 
         public static void Add(string Message)
         {
+            if (Config.DebugMode)
+            {
+                System.Windows.Forms.MessageBox.Show("Log.Add");
+                System.Windows.Forms.MessageBox.Show(Message);
+            }
+
+
             string Time = DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss:ffffff");
             Message = Time + "# " + Message;
 
             try
             {//Попытка записать сообщение в файл
                 file.WriteLine(Message);
+                file.Flush();
             }
             catch (Exception)
             {//Если попытка не удалась
-                if (Config.SilentMode)
-                    return;
+                //if (Config.SilentMode)
+                //    return;
                 //И если у нас не тихий режим
                 MessageBox.Show(Message);
             }
@@ -57,6 +68,9 @@ namespace CreationDate_Changer
 
         public static void Close()
         {
+            if (Config.DebugMode)
+                System.Windows.Forms.MessageBox.Show("LogClose");
+
             try
             {
                 file.Dispose();
